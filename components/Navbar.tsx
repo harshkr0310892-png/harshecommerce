@@ -1,5 +1,5 @@
-import React from 'react';
-import { ShoppingBag, Search, Menu, Sun, Moon, Settings, Heart, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingBag, Search, Menu, Sun, Moon, Settings, Heart, User, X, LogIn } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { useTheme } from '../context/ThemeContext';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 export const Navbar: React.FC = () => {
   const { toggleCart, cartCount, wishlist, userProfile } = useShop();
   const { theme, toggleTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <nav className="sticky top-0 z-40 w-full bg-white/70 dark:bg-neutral-950/80 backdrop-blur-lg border-b border-slate-200/60 dark:border-neutral-800 transition-all duration-300">
@@ -45,15 +46,22 @@ export const Navbar: React.FC = () => {
               )}
             </Link>
 
-             <Link to="/profile" className="p-2 text-slate-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-gold-400 transition-colors hidden sm:block hover:bg-slate-100 dark:hover:bg-neutral-800 rounded-full" title="My Profile">
-               {userProfile?.avatar ? (
-                 <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-indigo-100 dark:ring-neutral-700">
-                    <img src={userProfile.avatar} alt="User" className="w-full h-full object-cover" />
-                 </div>
-               ) : (
-                 <User className="w-5 h-5" />
-               )}
-            </Link>
+             {userProfile ? (
+               <Link to="/profile" className="p-2 text-slate-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-gold-400 transition-colors hidden sm:block hover:bg-slate-100 dark:hover:bg-neutral-800 rounded-full" title="My Profile">
+                 {userProfile.avatar ? (
+                   <div className="w-5 h-5 rounded-full overflow-hidden ring-2 ring-indigo-100 dark:ring-neutral-700">
+                      <img src={userProfile.avatar} alt="User" className="w-full h-full object-cover" />
+                   </div>
+                 ) : (
+                   <User className="w-5 h-5" />
+                 )}
+              </Link>
+             ) : (
+               <Link to="/customer-login" className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 dark:bg-gold-500 rounded-full hover:bg-indigo-700 dark:hover:bg-gold-600 transition-colors shadow-sm">
+                 <LogIn className="w-4 h-4" />
+                 Sign In
+               </Link>
+             )}
 
             <button 
               onClick={toggleTheme}
@@ -79,13 +87,46 @@ export const Navbar: React.FC = () => {
             </button>
             
             <div className="md:hidden">
-              <button className="p-2 text-slate-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-gold-400">
-                <Menu className="w-6 h-6" />
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 text-slate-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-gold-400 focus:outline-none"
+              >
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white/95 dark:bg-neutral-950/95 backdrop-blur-lg border-b border-slate-200 dark:border-neutral-800 absolute w-full z-50 animate-fade-in-down shadow-xl">
+          <div className="px-4 pt-2 pb-6 space-y-2">
+            <Link to="/" onClick={() => setIsMenuOpen(false)} className="block px-3 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-gold-500 hover:bg-indigo-50 dark:hover:bg-neutral-800 transition-all">Home</Link>
+            <Link to="/shop" onClick={() => setIsMenuOpen(false)} className="block px-3 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-gold-500 hover:bg-indigo-50 dark:hover:bg-neutral-800 transition-all">Shop</Link>
+            <Link to="/about" onClick={() => setIsMenuOpen(false)} className="block px-3 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-gold-500 hover:bg-indigo-50 dark:hover:bg-neutral-800 transition-all">About</Link>
+            
+            <div className="border-t border-slate-200 dark:border-neutral-800 my-2 pt-2 space-y-2">
+               {userProfile ? (
+                 <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-gold-500 hover:bg-indigo-50 dark:hover:bg-neutral-800 transition-all">
+                    <User className="w-5 h-5 mr-3" /> Profile
+                 </Link>
+               ) : (
+                 <Link to="/customer-login" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-gold-500 hover:bg-indigo-50 dark:hover:bg-neutral-800 transition-all">
+                    <LogIn className="w-5 h-5 mr-3" /> Sign In
+                 </Link>
+               )}
+               <Link to="/wishlist" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-gold-500 hover:bg-indigo-50 dark:hover:bg-neutral-800 transition-all">
+                  <Heart className="w-5 h-5 mr-3" /> Wishlist
+                  {wishlist.length > 0 && <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{wishlist.length}</span>}
+               </Link>
+               <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center px-3 py-3 rounded-xl text-base font-medium text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-gold-500 hover:bg-indigo-50 dark:hover:bg-neutral-800 transition-all">
+                  <Settings className="w-5 h-5 mr-3" /> Admin Dashboard
+               </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

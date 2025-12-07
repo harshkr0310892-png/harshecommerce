@@ -5,7 +5,7 @@ import { ShieldCheck, CreditCard, Truck, CheckCircle, ArrowRight, ShoppingBag } 
 import { Order, UserProfile } from '../types';
 
 export const CheckoutPage: React.FC = () => {
-  const { cart, cartTotal, clearCart, addOrder, userProfile, updateUserProfile } = useShop();
+  const { cart, cartTotal, clearCart, addOrder, userProfile, updateUserProfile, getDiscountedPrice } = useShop();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -208,20 +208,25 @@ export const CheckoutPage: React.FC = () => {
               </h2>
               
               <div className="max-h-80 overflow-y-auto pr-2 mb-6 custom-scrollbar space-y-4">
-                {cart.map(item => (
-                  <div key={item.id} className="flex items-center">
-                    <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-neutral-700">
-                      <img src={item.image} alt={item.name} className="h-full w-full object-cover object-center" />
-                    </div>
-                    <div className="ml-4 flex-1">
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white line-clamp-1">{item.name}</h3>
-                      <div className="flex justify-between items-center mt-1">
-                        <p className="text-sm text-slate-500 dark:text-gray-400">Qty: {item.quantity}</p>
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                {cart.map(item => {
+                  const discountedPrice = getDiscountedPrice(item.price, item.discount);
+                  return (
+                    <div key={item.id} className="flex items-center">
+                      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-neutral-700">
+                        <img src={item.image} alt={item.name} className="h-full w-full object-cover object-center" />
+                      </div>
+                      <div className="ml-4 flex-1">
+                        <h3 className="text-sm font-medium text-slate-900 dark:text-white line-clamp-1">{item.name}</h3>
+                        <div className="flex justify-between items-center mt-1">
+                          <p className="text-sm text-slate-500 dark:text-gray-400">Qty: {item.quantity}</p>
+                          <div className="text-right">
+                             <p className="text-sm font-bold text-slate-900 dark:text-white">₹{(discountedPrice * item.quantity).toLocaleString('en-IN')}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="border-t border-slate-100 dark:border-neutral-800 pt-6 space-y-3">

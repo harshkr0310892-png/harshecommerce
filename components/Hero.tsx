@@ -1,8 +1,55 @@
-import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, ChevronLeft, ChevronRight, Circle, CircleDot } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useShop } from '../context/ShopContext';
 
 export const Hero: React.FC = () => {
+  const { bannerImages, bannerInterval } = useShop();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (bannerImages.length <= 1) return;
+
+    const startTimer = () => {
+      timerRef.current = setInterval(() => {
+        setCurrentSlide(prev => (prev + 1) % bannerImages.length);
+      }, bannerInterval);
+    };
+
+    startTimer();
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [bannerImages.length, bannerInterval]);
+
+  const nextSlide = () => {
+    setCurrentSlide(prev => (prev + 1) % bannerImages.length);
+    resetTimer();
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(prev => (prev - 1 + bannerImages.length) % bannerImages.length);
+    resetTimer();
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+    resetTimer();
+  };
+
+  const resetTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % bannerImages.length);
+    }, bannerInterval);
+  };
+
+  // No default banners - display placeholder if empty
+  const displayImages = bannerImages;
+
   return (
     <div className="relative bg-white dark:bg-neutral-950 overflow-hidden transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
@@ -12,7 +59,7 @@ export const Hero: React.FC = () => {
           <div className="absolute inset-0 bg-grid-slate-100/50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:hidden pointer-events-none"></div>
 
           <svg
-            className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white dark:text-neutral-950 transform translate-x-1/2 transition-colors duration-300 drop-shadow-xl"
+            className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white dark:text-neutral-950 transform translate-x-1/2 transition-colors duration-300 drop-shadow-xl z-20"
             fill="currentColor"
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
@@ -52,16 +99,69 @@ export const Hero: React.FC = () => {
           </main>
         </div>
       </div>
-      <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-        <img
-          className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full opacity-90 transition-opacity hover:opacity-100 duration-700"
-          src="https://picsum.photos/id/6/1200/800"
-          alt="Modern workspace"
-        />
-        {/* Overlay to darken image in dark mode */}
-        <div className="absolute inset-0 bg-black opacity-0 dark:opacity-40 transition-opacity duration-300 pointer-events-none"></div>
-        {/* Gradient overlay for light mode blending */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent opacity-100 dark:opacity-0 pointer-events-none lg:bg-gradient-to-l"></div>
+
+      {/* Hero Image Carousel Area */}
+      <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 h-56 sm:h-72 md:h-96 lg:h-full relative group bg-slate-50 dark:bg-neutral-900">
+        
+        {/* Carousel Images */}
+        {displayImages.length > 0 ? (
+          displayImages.map((img, index) => (
+            <div 
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+            >
+              <img
+                className="h-full w-full object-cover"
+                src={img}
+                alt={`Banner ${index + 1}`}
+              />
+              {/* Overlay to darken image in dark mode */}
+              <div className="absolute inset-0 bg-black opacity-0 dark:opacity-40 transition-opacity duration-300 pointer-events-none"></div>
+              {/* Gradient overlay for light mode blending */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent opacity-100 dark:opacity-0 pointer-events-none lg:bg-gradient-to-l"></div>
+            </div>
+          ))
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-slate-400 dark:text-neutral-600 bg-slate-100 dark:bg-neutral-800">
+             <div className="text-center p-6">
+                <div className="text-6xl mb-4 opacity-50">🖼️</div>
+                <p className="text-xl font-medium">No Banners Active</p>
+                <p className="text-sm mt-2 opacity-70">Add banners via Admin Dashboard</p>
+             </div>
+          </div>
+        )}
+
+        {/* Carousel Controls */}
+        {displayImages.length > 1 && (
+          <>
+            {/* Navigation Arrows */}
+            <button 
+              onClick={prevSlide}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/30 dark:bg-black/30 backdrop-blur-sm text-white hover:bg-white/50 dark:hover:bg-black/50 transition-all opacity-0 group-hover:opacity-100"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button 
+              onClick={nextSlide}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/30 dark:bg-black/30 backdrop-blur-sm text-white hover:bg-white/50 dark:hover:bg-black/50 transition-all opacity-0 group-hover:opacity-100"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Indicators */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+              {displayImages.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => goToSlide(idx)}
+                  className={`transition-all ${idx === currentSlide ? 'text-white scale-110' : 'text-white/50 hover:text-white/80'}`}
+                >
+                  {idx === currentSlide ? <CircleDot className="w-3 h-3 fill-current" /> : <Circle className="w-2.5 h-2.5 fill-current" />}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ export interface Product {
   images: string[];
   rating: number;
   reviews: number;
+  stock: number;
+  discount: number; // Percentage (0-100)
 }
 
 export interface CartItem extends Product {
@@ -26,7 +28,9 @@ export interface Order {
   items: CartItem[];
   total: number;
   date: string;
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered';
+  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  currentLocation?: string;
+  adminNote?: string;
 }
 
 export interface UserProfile {
@@ -56,4 +60,17 @@ export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
   recommendations?: Product[];
+}
+
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+export interface SiteContent {
+  privacyPolicy: string;
+  termsConditions: string;
+  returnPolicy: string;
+  cookiePolicy: string;
 }

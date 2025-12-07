@@ -4,7 +4,7 @@ import { useShop } from '../context/ShopContext';
 import { useNavigate } from 'react-router-dom';
 
 export const CartDrawer: React.FC = () => {
-  const { cart, isCartOpen, toggleCart, updateQuantity, removeFromCart, cartTotal } = useShop();
+  const { cart, isCartOpen, toggleCart, updateQuantity, removeFromCart, cartTotal, getDiscountedPrice } = useShop();
   const navigate = useNavigate();
 
   if (!isCartOpen) return null;
@@ -54,52 +54,64 @@ export const CartDrawer: React.FC = () => {
                 </button>
               </div>
             ) : (
-              cart.map(item => (
-                <div key={item.id} className="flex py-2 group">
-                  <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800">
-                    <img 
-                      src={item.image} 
-                      alt={item.name} 
-                      className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="ml-5 flex flex-1 flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start">
-                        <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 pr-4">{item.name}</h3>
-                        <p className="text-sm font-bold text-gray-900 dark:text-white">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
-                      </div>
-                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{item.category}</p>
+              cart.map(item => {
+                const discountedPrice = getDiscountedPrice(item.price, item.discount);
+                return (
+                  <div key={item.id} className="flex py-2 group">
+                    <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800">
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      />
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center border border-gray-200 dark:border-neutral-700 rounded-lg overflow-hidden">
+                    <div className="ml-5 flex flex-1 flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-start">
+                          <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 pr-4">{item.name}</h3>
+                          <div className="text-right">
+                             <p className="text-sm font-bold text-gray-900 dark:text-white">₹{(discountedPrice * item.quantity).toLocaleString('en-IN')}</p>
+                             {item.discount > 0 && (
+                               <p className="text-xs text-gray-400 line-through">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                             )}
+                          </div>
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{item.category}</p>
+                        {item.stock < 10 && (
+                          <p className="text-[10px] text-red-500 font-medium mt-1">Only {item.stock} left!</p>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center border border-gray-200 dark:border-neutral-700 rounded-lg overflow-hidden">
+                          <button 
+                            onClick={() => updateQuantity(item.id, -1)}
+                            className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-300 transition-colors"
+                            disabled={item.quantity <= 1}
+                          >
+                            <Minus className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="px-2.5 py-1 text-sm font-medium text-gray-900 dark:text-white min-w-[1.5rem] text-center">{item.quantity}</span>
+                          <button 
+                            onClick={() => updateQuantity(item.id, 1)}
+                            className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-300 transition-colors"
+                            disabled={item.quantity >= item.stock}
+                          >
+                            <Plus className={`w-3.5 h-3.5 ${item.quantity >= item.stock ? 'opacity-50' : ''}`} />
+                          </button>
+                        </div>
                         <button 
-                          onClick={() => updateQuantity(item.id, -1)}
-                          className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-300 transition-colors"
-                          disabled={item.quantity <= 1}
+                          type="button" 
+                          onClick={() => removeFromCart(item.id)}
+                          className="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
+                          title="Remove item"
                         >
-                          <Minus className="w-3.5 h-3.5" />
-                        </button>
-                        <span className="px-2.5 py-1 text-sm font-medium text-gray-900 dark:text-white min-w-[1.5rem] text-center">{item.quantity}</span>
-                        <button 
-                          onClick={() => updateQuantity(item.id, 1)}
-                          className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-300 transition-colors"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
-                      <button 
-                        type="button" 
-                        onClick={() => removeFromCart(item.id)}
-                        className="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
-                        title="Remove item"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 

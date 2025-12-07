@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
-import { User, MapPin, Package, Edit2, Save, X, Camera, Mail, ShoppingBag } from 'lucide-react';
-import { UserProfile } from '../types';
-import { Link } from 'react-router-dom';
+import { User, MapPin, Package, Edit2, Save, X, Camera, Mail, ShoppingBag, CheckCircle2, Circle, Truck, ClipboardCheck, XCircle, Navigation, MessageSquare, LogOut } from 'lucide-react';
+import { UserProfile, Order } from '../types';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const ProfilePage: React.FC = () => {
-  const { userProfile, updateUserProfile, orders } = useShop();
+  const { userProfile, updateUserProfile, orders, cancelOrder, logoutCustomer } = useShop();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
+  const navigate = useNavigate();
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!userProfile) {
+      navigate('/customer-login');
+    }
+  }, [userProfile, navigate]);
 
   // Form State
   const [formData, setFormData] = useState<UserProfile>({
@@ -61,6 +69,25 @@ export const ProfilePage: React.FC = () => {
     setIsEditing(false);
   };
 
+  const handleLogout = () => {
+    logoutCustomer();
+    navigate('/');
+  };
+
+  const handleCancelOrder = (e: React.MouseEvent, orderId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Direct cancel without window.confirm to avoid browser blocking, or just use it.
+    // Using a custom confirmation is better but for now window.confirm is standard.
+    // Ensure the function is called properly.
+    if (window.confirm("Are you sure you want to cancel this order? It will be removed from your history.")) {
+      cancelOrder(orderId);
+    }
+  };
+
+  if (!userProfile) return null; // Or a loading spinner, though useEffect will redirect
+
   // Filter orders for this user
   const userOrders = orders.filter(o => 
     userProfile?.email && o.customer.email.toLowerCase() === userProfile.email.toLowerCase()
@@ -70,6 +97,43 @@ export const ProfilePage: React.FC = () => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric', month: 'long', day: 'numeric'
     });
+  };
+
+  // Helper for tracking steps
+  const getStepStatus = (currentStatus: Order['status'], stepStatus: Order['status']) => {
+    const steps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+    const currentIndex = steps.indexOf(currentStatus);
+    const stepIndex = steps.indexOf(stepStatus);
+
+    if (currentIndex > stepIndex) return 'completed';
+    if (currentIndex === stepIndex) return 'current';
+    return 'upcoming';
+  };
+
+  const TrackerStep = ({ status, label, icon: Icon, currentStatus }: { status: Order['status'], label: string, icon: any, currentStatus: Order['status'] }) => {
+    const stepState = getStepStatus(currentStatus, status);
+    
+    let colorClass = 'text-gray-400 border-gray-300 dark:border-neutral-700';
+    let bgClass = 'bg-white dark:bg-neutral-900';
+
+    if (stepState === 'completed') {
+       colorClass = 'text-green-500 border-green-500';
+       bgClass = 'bg-green-50 dark:bg-green-900/20';
+    } else if (stepState === 'current') {
+       colorClass = 'text-indigo-600 dark:text-gold-500 border-indigo-600 dark:border-gold-500';
+       bgClass = 'bg-indigo-50 dark:bg-gold-500/10';
+    }
+
+    return (
+      <div className="flex flex-col items-center relative z-10">
+        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${colorClass} ${bgClass}`}>
+          {stepState === 'completed' ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-4 h-4" />}
+        </div>
+        <span className={`text-xs mt-2 font-medium ${stepState === 'upcoming' ? 'text-gray-400' : 'text-slate-900 dark:text-white'}`}>
+          {label}
+        </span>
+      </div>
+    );
   };
 
   return (
@@ -97,19 +161,21 @@ export const ProfilePage: React.FC = () => {
             
             <div className="flex-1 pb-2">
               <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                {userProfile?.name || 'Guest User'}
+                {userProfile.name}
               </h1>
               <p className="text-slate-500 dark:text-gray-400 flex items-center gap-2">
-                <Mail className="w-4 h-4" /> {userProfile?.email || 'No email provided'}
+                <Mail className="w-4 h-4" /> {userProfile.email}
               </p>
             </div>
 
             <div className="flex gap-3">
-               {!userProfile && (
-                 <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-500 px-4 py-2 rounded-xl text-sm font-medium">
-                    Profile not saved
-                 </div>
-               )}
+               <button 
+                  onClick={handleLogout}
+                  className="flex items-center px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl font-medium hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+               >
+                 <LogOut className="w-4 h-4 mr-2" />
+                 Sign Out
+               </button>
             </div>
           </div>
         </div>
@@ -290,19 +356,75 @@ export const ProfilePage: React.FC = () => {
                            <span className="text-xs text-slate-500 dark:text-gray-400 font-bold uppercase tracking-wider">Order #</span>
                            <span className="text-sm font-medium text-slate-900 dark:text-white">{order.id}</span>
                         </div>
-                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                           order.status === 'Delivered' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500' : 
-                           order.status === 'Shipped' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-500' :
-                           'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500'
-                         }`}>
-                           {order.status}
-                         </span>
+                        {(order.status === 'Pending' || order.status === 'Processing') && (
+                          <div className="flex items-center">
+                            <button
+                              type="button"
+                              onClick={(e) => handleCancelOrder(e, order.id)}
+                              className="text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 rounded-lg transition-colors border border-red-200 dark:border-red-900/30"
+                            >
+                              Cancel Order
+                            </button>
+                          </div>
+                        )}
                       </div>
                       
                       <div className="p-6">
+                        {/* Order Tracker */}
+                        <div className="mb-8">
+                          {order.status === 'Cancelled' ? (
+                             <div className="flex flex-col items-center justify-center py-4 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/30">
+                                <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-2">
+                                  <XCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                                </div>
+                                <h3 className="text-lg font-bold text-red-600 dark:text-red-400">Order Cancelled</h3>
+                                <p className="text-sm text-red-500 dark:text-red-300">This order has been cancelled and refunded if applicable.</p>
+                             </div>
+                          ) : (
+                            <div className="space-y-6">
+                              <div className="relative">
+                                <div className="absolute top-4 left-4 right-4 h-0.5 bg-gray-200 dark:bg-neutral-700 -z-0"></div>
+                                <div className="flex justify-between w-full">
+                                  <TrackerStep status="Pending" label="Placed" icon={ClipboardCheck} currentStatus={order.status} />
+                                  <TrackerStep status="Processing" label="Processing" icon={Package} currentStatus={order.status} />
+                                  <TrackerStep status="Shipped" label="Shipped" icon={Truck} currentStatus={order.status} />
+                                  <TrackerStep status="Delivered" label="Delivered" icon={MapPin} currentStatus={order.status} />
+                                </div>
+                              </div>
+                              
+                              {/* Live Status Updates */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {order.currentLocation && (
+                                  <div className="bg-indigo-50 dark:bg-neutral-800 p-4 rounded-xl border border-indigo-100 dark:border-neutral-700 flex items-start gap-3">
+                                     <div className="p-2 bg-white dark:bg-neutral-700 rounded-lg shadow-sm">
+                                       <Navigation className="w-5 h-5 text-indigo-600 dark:text-gold-500" />
+                                     </div>
+                                     <div>
+                                        <h4 className="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-1">Current Location</h4>
+                                        <p className="font-semibold text-slate-800 dark:text-white text-sm">{order.currentLocation}</p>
+                                     </div>
+                                  </div>
+                                )}
+                                
+                                {order.adminNote && (
+                                  <div className="bg-amber-50 dark:bg-neutral-800 p-4 rounded-xl border border-amber-100 dark:border-neutral-700 flex items-start gap-3">
+                                     <div className="p-2 bg-white dark:bg-neutral-700 rounded-lg shadow-sm">
+                                       <MessageSquare className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+                                     </div>
+                                     <div>
+                                        <h4 className="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-1">Message from Seller</h4>
+                                        <p className="font-medium text-slate-800 dark:text-white text-sm italic">"{order.adminNote}"</p>
+                                     </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
                         <div className="space-y-4">
                           {order.items.map((item, idx) => (
-                            <div key={idx} className="flex items-center">
+                            <div key={idx} className={`flex items-center ${order.status === 'Cancelled' ? 'opacity-50' : ''}`}>
                               <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-neutral-700">
                                 <img src={item.image} alt={item.name} className="h-full w-full object-cover object-center" />
                               </div>

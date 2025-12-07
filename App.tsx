@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { ShopProvider, useShop } from './context/ShopContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -11,9 +11,11 @@ import { ShopPage } from './pages/ShopPage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { AdminPage } from './pages/AdminPage';
 import { LoginPage } from './pages/LoginPage';
+import { CustomerLoginPage } from './pages/CustomerLoginPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { InfoPage } from './pages/InfoPage';
 import { ProductCard } from './components/ProductCard';
 
 // Protected Route Component
@@ -40,9 +42,9 @@ const HomePageContent: React.FC = () => {
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Featured Collections</h2>
             <p className="mt-1 text-slate-500 dark:text-gray-400">Handpicked items just for you</p>
           </div>
-          <a href="#/shop" className="text-indigo-600 dark:text-gold-500 font-medium hover:text-indigo-800 dark:hover:text-gold-400 flex items-center group">
+          <Link to="/shop" className="text-indigo-600 dark:text-gold-500 font-medium hover:text-indigo-800 dark:hover:text-gold-400 flex items-center group">
             View all <span aria-hidden="true" className="ml-1 group-hover:translate-x-1 transition-transform">&rarr;</span>
-          </a>
+          </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {products.slice(0, 4).map(product => (
@@ -98,9 +100,14 @@ const AppLayout: React.FC = () => {
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/customer-login" element={<CustomerLoginPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/privacy" element={<InfoPage type="privacy" />} />
+          <Route path="/terms" element={<InfoPage type="terms" />} />
+          <Route path="/cookies" element={<InfoPage type="cookies" />} />
+          <Route path="/returns" element={<InfoPage type="returns" />} />
           <Route 
             path="/admin" 
             element={
@@ -112,9 +119,39 @@ const AppLayout: React.FC = () => {
           <Route path="*" element={<HomePageContent />} />
         </Routes>
       </main>
-      <footer className="bg-white dark:bg-neutral-900 border-t border-slate-200 dark:border-neutral-800 py-10 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 text-center text-slate-500 dark:text-gray-400 text-sm">
-          <p className="font-medium">&copy; 2024 NexStore. All rights reserved.</p>
+      <footer className="bg-white dark:bg-neutral-900 border-t border-slate-200 dark:border-neutral-800 py-12 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div className="col-span-1 md:col-span-1">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-4">NexStore</h3>
+              <p className="text-slate-500 dark:text-gray-400 text-sm">Experience the future of shopping with our AI-powered platform.</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-800 dark:text-gray-200 mb-4">Shop</h4>
+              <ul className="space-y-2 text-sm text-slate-500 dark:text-gray-400">
+                <li><Link to="/shop" className="hover:text-indigo-600 dark:hover:text-gold-500 transition-colors">All Products</Link></li>
+                <li><Link to="/shop" className="hover:text-indigo-600 dark:hover:text-gold-500 transition-colors">Featured</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-800 dark:text-gray-200 mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-slate-500 dark:text-gray-400">
+                <li><Link to="/profile" className="hover:text-indigo-600 dark:hover:text-gold-500 transition-colors">My Account</Link></li>
+                <li><Link to="/returns" className="hover:text-indigo-600 dark:hover:text-gold-500 transition-colors">Return Policy</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-800 dark:text-gray-200 mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-slate-500 dark:text-gray-400">
+                <li><Link to="/privacy" className="hover:text-indigo-600 dark:hover:text-gold-500 transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="hover:text-indigo-600 dark:hover:text-gold-500 transition-colors">Terms & Conditions</Link></li>
+                <li><Link to="/cookies" className="hover:text-indigo-600 dark:hover:text-gold-500 transition-colors">Cookie Policy</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-slate-100 dark:border-neutral-800 pt-8 text-center text-slate-500 dark:text-gray-400 text-sm">
+            <p>&copy; 2024 NexStore. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

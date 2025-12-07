@@ -1,4 +1,4 @@
-import { Product, Category } from './types';
+import { Product, Category, UserProfile, Order } from './types';
 
 export const MOCK_PRODUCTS: Product[] = [
   {
@@ -14,7 +14,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/6/600/600"
     ],
     rating: 4.8,
-    reviews: 124
+    reviews: 124,
+    stock: 45,
+    discount: 10
   },
   {
     id: 2,
@@ -29,7 +31,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/22/600/600"
     ],
     rating: 4.6,
-    reviews: 89
+    reviews: 89,
+    stock: 20,
+    discount: 0
   },
   {
     id: 3,
@@ -44,7 +48,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/119/600/600"
     ],
     rating: 4.5,
-    reviews: 210
+    reviews: 210,
+    stock: 0, // Sold out
+    discount: 0
   },
   {
     id: 4,
@@ -58,7 +64,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/177/600/600"
     ],
     rating: 4.2,
-    reviews: 45
+    reviews: 45,
+    stock: 100,
+    discount: 25
   },
   {
     id: 5,
@@ -73,7 +81,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/180/600/600"
     ],
     rating: 4.9,
-    reviews: 315
+    reviews: 315,
+    stock: 15,
+    discount: 5
   },
   {
     id: 6,
@@ -87,7 +97,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/431/600/600"
     ],
     rating: 4.7,
-    reviews: 67
+    reviews: 67,
+    stock: 30,
+    discount: 0
   },
   {
     id: 7,
@@ -101,7 +113,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/8/600/600"
     ],
     rating: 4.3,
-    reviews: 150
+    reviews: 150,
+    stock: 80,
+    discount: 0
   },
   {
     id: 8,
@@ -115,7 +129,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/129/600/600"
     ],
     rating: 4.4,
-    reviews: 92
+    reviews: 92,
+    stock: 8,
+    discount: 15
   },
   {
     id: 9,
@@ -129,7 +145,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/10/600/600"
     ],
     rating: 4.1,
-    reviews: 34
+    reviews: 34,
+    stock: 50,
+    discount: 0
   },
   {
     id: 10,
@@ -143,7 +161,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/11/600/600"
     ],
     rating: 4.8,
-    reviews: 200
+    reviews: 200,
+    stock: 12,
+    discount: 0
   },
   {
     id: 11,
@@ -157,7 +177,9 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/12/600/600"
     ],
     rating: 4.5,
-    reviews: 112
+    reviews: 112,
+    stock: 25,
+    discount: 5
   },
   {
     id: 12,
@@ -171,6 +193,10 @@ export const MOCK_PRODUCTS: Product[] = [
       "https://picsum.photos/id/13/600/600"
     ],
     rating: 4.6,
-    reviews: 78
+    reviews: 78,
+    stock: 60,
+    discount: 0
   }
 ];
+
+export const MOCK_ORDERS: Order[] = [];
