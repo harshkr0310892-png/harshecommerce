@@ -550,29 +550,26 @@ export default function ProductDetail() {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-10">
+      <div className="container mx-auto px-4 py-12">
         {/* Back Button */}
-        <div className="mb-6">
-          <Link
-            to="/products"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Collection
-          </Link>
-        </div>
+        <Link 
+          to="/products" 
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Collection
+        </Link>
 
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12">
+        <div className="grid md:grid-cols-2 gap-12">
           {/* Image Gallery with Fullscreen */}
           <div className="space-y-4 animate-fade-in">
-            <div className="rounded-3xl border border-border/60 bg-white/70 shadow-sm p-3 sm:p-4">
-              {/* Main Image with Click to Fullscreen */}
-              <div 
-                className="relative aspect-square rounded-2xl overflow-hidden bg-card border border-border/50"
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              >
+            {/* Main Image with Click to Fullscreen */}
+            <div 
+              className="relative aspect-square rounded-2xl overflow-hidden bg-card border border-border/50"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               {allImages.length > 0 ? (
                 <>
                   <div 
@@ -635,94 +632,84 @@ export default function ProductDetail() {
 
             {/* Thumbnail Gallery */}
             {allImages.length > 1 && (
-              <div className="mt-3 flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
-                {allImages.slice(0, 6).map((img, index) => (
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {allImages.slice(0, 3).map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
                     className={cn(
-                      "w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 border transition-all bg-white",
-                      currentImageIndex === index
-                        ? "border-primary ring-2 ring-primary/20"
-                        : "border-border/60 hover:border-primary/40"
+                      "w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all",
+                      currentImageIndex === index 
+                        ? "border-primary ring-2 ring-primary/20" 
+                        : "border-transparent hover:border-border"
                     )}
                   >
-                    <img
-                      src={img}
+                    <img 
+                      src={img} 
                       alt={`${product.name} thumbnail ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                   </button>
                 ))}
-                {allImages.length > 6 && (
-                  <div className="w-20 h-20 rounded-xl flex items-center justify-center bg-muted border border-dashed border-border/70 flex-shrink-0">
+                {allImages.length > 3 && (
+                  <div className="w-20 h-20 rounded-lg flex items-center justify-center bg-muted border-2 border-dashed border-border flex-shrink-0">
                     <span className="text-xs font-medium text-muted-foreground">
-                      +{allImages.length - 6}
+                      +{allImages.length - 3} more
                     </span>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Gallery helper row */}
-            <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-              <span>Tap image to zoom</span>
-              {allImages.length > 0 && (
-                <span>
-                  {currentImageIndex + 1}/{allImages.length}
-                </span>
-              )}
-            </div>
           </div>
-        </div>
 
-          {/* Details (sticky on desktop) */}
-          <div className="flex flex-col animate-fade-in stagger-2 lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-3xl border border-border/60 bg-white/80 shadow-lg p-5 sm:p-6">
-              <div className="flex justify-between items-start gap-4">
-                <h1 className="font-display text-3xl md:text-4xl font-bold">
-                  {product.name}
-                </h1>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleToggleWishlist}
-                    className={cn(
-                      isWishlisted && "bg-primary text-primary-foreground hover:bg-primary/90",
-                      "border-red-500 hover:border-red-500 hover:bg-red-500 hover:text-white"
-                    )}
-                    style={{ borderColor: 'red' }}
-                  >
-                    <Heart className={cn("w-5 h-5", isWishlisted && "fill-current")} />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleShare}
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </Button>
-                </div>
+          {/* Details */}
+          <div className="flex flex-col animate-fade-in stagger-2">
+            <div className="flex justify-between items-start">
+              <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">
+                {product.name}
+              </h1>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleToggleWishlist}
+                  className={cn(
+                    isWishlisted && "bg-primary text-primary-foreground hover:bg-primary/90",
+                    "border-red-500 hover:border-red-500 hover:bg-red-500 hover:text-white"
+                  )}
+                  style={{ borderColor: 'red' }}
+                >
+                  <Heart className={cn("w-5 h-5", isWishlisted && "fill-current")} />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={handleShare}
+                  className="ml-2"
+                >
+                  <Share2 className="w-5 h-5" />
+                </Button>
               </div>
+            </div>
 
             {(brand || seller_name) && (
-              <div className="mt-4 mb-6 space-y-2">
+              <div className="mt-2 mb-6 space-y-2">
                 {brand && (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     {brand_logo_url && (
                       <img
                         src={brand_logo_url}
                         alt={brand}
-                        className="w-12 h-12 rounded-full object-cover border border-border/60 bg-white"
+                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-border shadow-sm"
                       />
                     )}
-                    <span className="text-base md:text-lg text-foreground">
+                    <span className="text-lg md:text-xl font-display text-foreground">
                       <span className="font-semibold">Brand:</span> {brand}
                     </span>
                   </div>
                 )}
-              </div>
+                </div>
             )}
 
             {/* Price */}
@@ -778,22 +765,6 @@ export default function ProductDetail() {
                 {product.description}
               </p>
             )}
-
-            {/* Trust row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-white/60 px-4 py-3">
-                <ShieldCheck className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium text-foreground">Secure checkout</span>
-              </div>
-              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-white/60 px-4 py-3">
-                <RotateCcw className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium text-foreground">7-day return</span>
-              </div>
-              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-white/60 px-4 py-3">
-                <Truck className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium text-foreground">Fast delivery</span>
-              </div>
-            </div>
             
                         
             {/* Variant Selector */}
@@ -835,11 +806,11 @@ export default function ProductDetail() {
             )}
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-2">
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button
                 variant="royal"
                 size="xl"
-                className="w-full"
+                className="he"
                 onClick={handleAddToCart}
                 disabled={isSoldOut}
               >
@@ -849,18 +820,17 @@ export default function ProductDetail() {
               <Button
                 variant={isWishlisted ? "default" : "outline"}
                 size="xl"
-                className="w-full border-red-500 hover:bg-red-500 hover:text-white"
+                className="hey border-red-500 hover:bg-red-500 hover:text-white"
                 onClick={handleToggleWishlist}
               >
-                <Heart className={cn("w-5 h-5 mr-2", isWishlisted && "fill-current animate-pulse")} />
+                <Heart className={cn("w-5 h- mr-2", isWishlisted && "fill-current animate-pulse")} />
                 {isWishlisted ? 'In Wishlist' : 'Add to Wishlist'}
               </Button>
             </div>
 
-            <p className="text-xs text-muted-foreground">
-              Tip: Select variant options (size/color) before adding to cart.
-            </p>
-          </div>
+            {/* Product Details Tabs */}
+            {(product.detailed_description || productFeatures.length > 0 || height || width || weight || brand || seller_name) && (
+              <div className="mb-6">
                 {/* Selected Variant Info */}
                 {selectedVariant && (
                   <div className="mb-6 p-4 bg-muted/30 rounded-lg border border-border">
@@ -991,7 +961,11 @@ export default function ProductDetail() {
                       )}
                     </div>
                   )}
+
+                  
+                                  </div>
               </div>
+            )}
 
             {/* Features */}
             <div className="mt-10 pt-8 border-t border-border/50">
@@ -1033,159 +1007,6 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
-      {/* Full-width details */}
-        {(product.detailed_description || productFeatures.length > 0 || height || width || weight || brand || seller_name) && (
-          <div className="mt-10 rounded-3xl border border-border/60 bg-white/70 shadow-sm p-5 sm:p-6">
-            {/* Selected Variant Info */}
-            {selectedVariant && (
-              <div className="mb-6 p-4 bg-muted/30 rounded-2xl border border-border/60">
-                <div className="flex items-center gap-2">
-                  <Crown className="w-5 h-5 text-primary" />
-                  <span className="font-medium text-foreground">
-                    {selectedVariant.attribute_name}: {selectedVariant.value_name}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            <div className="relative mb-6">
-              {/* Left Scroll Arrow */}
-              {canScrollLeft && (
-                <button
-                  onClick={() => scrollTabs('left')}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full bg-background border border-border shadow-md hover:bg-muted transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4 text-primary" />
-                </button>
-              )}
-
-              {/* Right Scroll Arrow */}
-              {canScrollRight && (
-                <button
-                  onClick={() => scrollTabs('right')}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full bg-background border border-border shadow-md hover:bg-muted transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4 text-primary" />
-                </button>
-              )}
-
-              <div
-                ref={tabsRef}
-                onScroll={checkScrollPosition}
-                className="flex border-b border-border overflow-x-auto scrollbar-hide"
-              >
-                <div className="flex flex-1 min-w-0 gap-3 sm:gap-6">
-                  {product.detailed_description && (
-                    <button
-                      className={cn(
-                        "px-3 py-3 text-sm font-semibold transition-colors flex-1 min-w-0 text-center",
-                        activeTab === 'description'
-                          ? "text-primary border-b-2 border-primary"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                      onClick={() => setActiveTab('description')}
-                    >
-                      <span className="truncate">Description</span>
-                    </button>
-                  )}
-
-                  {productFeatures.length > 0 && (
-                    <button
-                      className={cn(
-                        "px-3 py-3 text-sm font-semibold transition-colors flex-1 min-w-0 text-center",
-                        activeTab === 'features'
-                          ? "text-primary border-b-2 border-primary"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                      onClick={() => setActiveTab('features')}
-                    >
-                      <span className="truncate">Features</span>
-                    </button>
-                  )}
-
-                  {(height || width || weight) && (
-                    <button
-                      className={cn(
-                        "px-3 py-3 text-sm font-semibold transition-colors flex-1 min-w-0 text-center",
-                        activeTab === 'dimensions'
-                          ? "text-primary border-b-2 border-primary"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                      onClick={() => setActiveTab('dimensions')}
-                    >
-                      <span className="truncate">Dimensions</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-2">
-              {activeTab === 'description' && product.detailed_description && (
-                <div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {product.detailed_description}
-                  </p>
-                </div>
-              )}
-
-              {activeTab === 'features' && productFeatures.length > 0 && (
-                <div>
-                  <ul className="grid sm:grid-cols-2 gap-2">
-                    {productFeatures.map((feature: string, index: number) => (
-                      <li
-                        key={index}
-                        className="flex items-start gap-2 rounded-2xl border border-border/60 bg-white/60 px-3 py-2"
-                      >
-                        <BadgeCheck className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-muted-foreground text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {activeTab === 'dimensions' && (height || width || weight) && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {height && (
-                    <div className="rounded-2xl border border-border/60 bg-white/60 px-4 py-3">
-                      <h4 className="font-semibold text-foreground mb-1">Height</h4>
-                      <p className="text-muted-foreground">{height}</p>
-                    </div>
-                  )}
-                  {width && (
-                    <div className="rounded-2xl border border-border/60 bg-white/60 px-4 py-3">
-                      <h4 className="font-semibold text-foreground mb-1">Width</h4>
-                      <p className="text-muted-foreground">{width}</p>
-                    </div>
-                  )}
-                  {weight && (
-                    <div className="rounded-2xl border border-border/60 bg-white/60 px-4 py-3">
-                      <h4 className="font-semibold text-foreground mb-1">Weight</h4>
-                      <p className="text-muted-foreground">{weight}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Seller */}
-            {seller_name && (
-              <div className="mt-8 rounded-3xl border border-border/60 bg-white/60 p-5">
-                <h4 className="font-display text-xl font-semibold mb-2">Seller</h4>
-                <p className="text-base leading-snug">
-                  <span className="font-semibold text-muted-foreground">Seller - </span>
-                  <span className="text-foreground font-semibold">{seller_name}</span>
-                </p>
-                {seller_description && (
-                  <p className="text-sm mt-2 leading-relaxed text-muted-foreground">
-                    {seller_description}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Fullscreen Image Viewer */}

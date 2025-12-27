@@ -236,12 +236,7 @@
   body {
     @apply text-foreground font-sans antialiased;
     background-color: hsl(var(--background));
-    /* Softer + cleaner premium background (mesh-like glow on top of subtle surface) */
-    background-image:
-      radial-gradient(1200px 600px at 20% 10%, hsl(var(--primary) / 0.10), transparent 55%),
-      radial-gradient(900px 500px at 85% 25%, hsl(var(--accent) / 0.10), transparent 55%),
-      radial-gradient(900px 500px at 10% 85%, hsl(280 87% 60% / 0.08), transparent 55%),
-      var(--gradient-surface);
+    background-image: var(--gradient-mesh);
     background-attachment: fixed;
     min-height: 100vh;
   }
@@ -284,11 +279,6 @@
   /* Smooth Focus Transitions */
   input, textarea, button, select, a {
     @apply transition-all duration-200;
-  }
-
-  /* Nicer tap highlight */
-  a, button {
-    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -1228,49 +1218,6 @@
   /* Legacy */
   .gradient-gold { background: var(--gradient-primary); }
 
-  /* === Layout helpers === */
-  .container-narrow { @apply max-w-6xl mx-auto; }
-  .section { @apply py-12 md:py-16 lg:py-20; }
-
-  .section-surface {
-    background:
-      radial-gradient(900px 500px at 20% 0%, hsl(var(--primary) / 0.10), transparent 60%),
-      radial-gradient(900px 500px at 90% 20%, hsl(var(--accent) / 0.10), transparent 60%),
-      linear-gradient(180deg, hsl(var(--background)), hsl(var(--background-secondary)));
-  }
-
-  .hero-surface {
-    background:
-      radial-gradient(1000px 600px at 20% 20%, hsl(var(--primary) / 0.14), transparent 60%),
-      radial-gradient(900px 500px at 85% 30%, hsl(var(--accent) / 0.14), transparent 60%),
-      linear-gradient(180deg, hsl(var(--background)), hsl(var(--background-secondary)));
-  }
-
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px solid hsl(var(--border) / 0.7);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .orb {
-    position: absolute;
-    border-radius: 9999px;
-    filter: blur(50px);
-    opacity: 0.55;
-    pointer-events: none;
-    transform: translateZ(0);
-  }
-
-  .hide-scrollbar {
-    scrollbar-width: none;
-  }
-
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
   /* Patterns */
   .bg-pattern-dots {
     background-image: radial-gradient(hsl(var(--border)) 1px, transparent 1px);
@@ -1689,23 +1636,6 @@
   }
 }
 
-.text-muted-foreground {
-  color: hsl(0deg 0% 0%);
-}
-.glass-panel {
-  background: rgba(255, 255, 255, 0.72);
-  border: 2px solid hsl(0deg 0% 0% / 70%);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--shadow-lg);
-}
-
-.text-foreground\/80 {
-    color: hsl(0deg 0% 0% / 80%);
-}
-.text-primary {
-  color: hsl(243deg 100% 50%);
-}
 /* ================================
    🔄 LEGACY COMPATIBILITY
    ================================ */
@@ -1715,8 +1645,9 @@
 .gold-scrollbar::-webkit-scrollbar { height: 6px; }
 .gold-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .gold-scrollbar::-webkit-scrollbar-thumb { background: hsl(var(--primary)); border-radius: 3px; }
-/* NOTE: do NOT override .text-muted-foreground globally.
-   It breaks contrast consistency across the app. */
+.text-muted-foreground {
+    color: hsl(0 0% 0%);
+}
 
 /* Import action buttons */
 @import './styles/action-buttons.css';
