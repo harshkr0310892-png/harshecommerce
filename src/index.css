@@ -1216,7 +1216,9 @@
   .bg-gradient-mesh { background: var(--gradient-mesh); }
 
   /* Legacy */
-  .gradient-gold { background: var(--gradient-primary); }
+  .gradient-gold {
+    background: linear-gradient(295deg, rgb(21, 66, 177), rgb(0, 0, 0), rgb(39, 44, 53));
+  }
 
   /* Patterns */
   .bg-pattern-dots {
