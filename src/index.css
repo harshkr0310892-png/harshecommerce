@@ -1647,9 +1647,12 @@
 .gold-scrollbar::-webkit-scrollbar { height: 6px; }
 .gold-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .gold-scrollbar::-webkit-scrollbar-thumb { background: hsl(var(--primary)); border-radius: 3px; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .text-muted-foreground {
     color: hsl(0 0% 0%);
 }
+
 
 /* Import action buttons */
 @import './styles/action-buttons.css';
